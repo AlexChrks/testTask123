@@ -14,7 +14,7 @@ function App() {
 	const [newQuestionOptions, setNewQuestionOptions] = useState<string[]>([]);
 
 	const [newQuestionName, setNewQuestionName] = useState("");
-	const [newOptionName, senNewOptionName] = useState("");
+	const [newOptionName, setNewOptionName] = useState("");
 
 	const isAddOptionDisabled = !Boolean(newOptionName);
 	const isAddQuestionDisabled = !Boolean(newQuestionName) || !Boolean(newQuestionOptions.length);
@@ -26,12 +26,12 @@ function App() {
 
 	const handleOptionTextChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
 		const { value } = target;
-		senNewOptionName(value);
+		setNewOptionName(value);
 	};
 
 	const addOption = () => {
 		setNewQuestionOptions((prev) => [...prev, newOptionName]);
-		senNewOptionName("");
+		setNewOptionName("");
 	};
 
 	const addQuestion = () => {
@@ -40,6 +40,7 @@ function App() {
 			{ text: newQuestionName, options: [...newQuestionOptions] }
 		]);
 		setNewQuestionName("");
+		setNewOptionName("");
 		setNewQuestionOptions([]);
 	};
 
