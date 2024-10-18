@@ -1,107 +1,122 @@
 import { useState } from "react";
 import "./App.css";
 
-import { Box, Container, Stack } from "@mui/system";
-import { Input, Button, InputLabel, List, ListItem, ListItemText } from "@mui/material";
+import { Container } from "@mui/system";
+
+import Question from "./components/Question/Question.tsx";
+
+import Questions from "./components/Questions/Questions.tsx";
+import Form from "./components/Form/Form.tsx";
 
 type Question = {
-	text: string;
-	options: string[];
+  text: string;
+  options: string[];
 };
 
+const mockQ = [
+  {
+    text: "How are you?",
+    options: ["Fine", "Bad"],
+  },
+  {
+    text: "What are you going to do?",
+    options: ["Walk", "Sleep"],
+  },
+];
+
 function App() {
-	const [questions, setQuestions] = useState<Question[]>([]);
-	const [newQuestionOptions, setNewQuestionOptions] = useState<string[]>([]);
+  const [questions, setQuestions] = useState<Question[]>(mockQ);
+  const [newQuestionOptions, setNewQuestionOptions] = useState<string[]>([]);
 
-	const [newQuestionName, setNewQuestionName] = useState("");
-	const [newOptionName, setNewOptionName] = useState("");
+  const [newQuestionName, setNewQuestionName] = useState("");
+  const [newOptionName, setNewOptionName] = useState("");
 
-	const isAddOptionDisabled = !Boolean(newOptionName);
-	const isAddQuestionDisabled = !Boolean(newQuestionName) || !Boolean(newQuestionOptions.length);
+  console.log(questions);
 
-	const handleQuestionTextChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
-		const { value } = target;
-		setNewQuestionName(value);
-	};
+  const isAddOptionDisabled = !Boolean(newOptionName);
+  const isAddQuestionDisabled =
+    !Boolean(newQuestionName) || !Boolean(newQuestionOptions.length);
 
-	const handleOptionTextChange = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
-		const { value } = target;
-		setNewOptionName(value);
-	};
+  const handleQuestionTextChange = ({
+    target,
+  }: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = target;
+    setNewQuestionName(value);
+  };
 
-	const addOption = () => {
-		setNewQuestionOptions((prev) => [...prev, newOptionName]);
-		setNewOptionName("");
-	};
+  const handleOptionTextChange = ({
+    target,
+  }: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = target;
+    setNewOptionName(value);
+  };
 
-	const addQuestion = () => {
-		setQuestions((prev) => [
-			...prev,
-			{ text: newQuestionName, options: [...newQuestionOptions] }
-		]);
-		setNewQuestionName("");
-		setNewOptionName("");
-		setNewQuestionOptions([]);
-	};
+  const addOption = () => {
+    setNewQuestionOptions((prev) => [...prev, newOptionName]);
+    setNewOptionName("");
+  };
 
-	const removeAnswerOption = (optionIndex: number) => () => {
-		const newOptions = [...newQuestionOptions];
-		newOptions.splice(optionIndex, 1);
+  const addQuestion = () => {
+    setQuestions((prev) => [
+      ...prev,
+      { text: newQuestionName, options: [...newQuestionOptions] },
+    ]);
+    setNewQuestionName("");
+    setNewOptionName("");
+    setNewQuestionOptions([]);
+  };
 
-		setNewQuestionOptions([...newOptions]);
-	};
+  const removeAnswerOption = (optionIndex: number) => () => {
+    const newOptions = [...newQuestionOptions];
+    newOptions.splice(optionIndex, 1);
 
-	return (
-		<Container>
-			<Stack>
-				<InputLabel>Question text:</InputLabel>
-				<Input
-					value={newQuestionName}
-					placeholder="Question text"
-					onChange={handleQuestionTextChange}
-				/>
+    setNewQuestionOptions([...newOptions]);
+  };
 
-				<List dense>
-					<ListItemText primary="Answer options:" />
-					{newQuestionOptions.map((option, index) => (
-						<ListItem key={option}>
-							<ListItemText primary={option} />
-							<Button variant="text" onClick={removeAnswerOption(index)}>
-								Remove
-							</Button>
-						</ListItem>
-					))}
-				</List>
+  const handleQuestionDelete = (text: string, deleteIndex: number) => {
+    const newQuestions = questions.filter(
+      (question, questionIndex) =>
+        question.text !== text && questionIndex !== deleteIndex,
+    );
 
-				<Input
-					value={newOptionName}
-					placeholder="Answer option text"
-					onChange={handleOptionTextChange}
-				/>
-				<Button disabled={isAddOptionDisabled} variant="outlined" onClick={addOption}>
-					Add answer option
-				</Button>
-			</Stack>
+    // API request to update questions
 
-			<Button disabled={isAddQuestionDisabled} variant="contained" onClick={addQuestion}>
-				Add question
-			</Button>
+    setQuestions(newQuestions);
+  };
 
-			<Stack spacing="sm">
-				{questions?.map(({ text, options }) => (
-					<Box key={text}>
-						<h3>Question: {text}</h3>
-						<h4>Answers:</h4>
-						<List>
-							{options?.map((option) => (
-								<ListItem>{option}</ListItem>
-							))}
-						</List>
-					</Box>
-				))}
-			</Stack>
-		</Container>
-	);
+  const onDragEnd = (result) => {
+    if (!result.destination) return;
+
+    const newQuestions = Array.from(questions);
+    const [movedQuestion] = newQuestions.splice(result.source.index, 1);
+    newQuestions.splice(result.destination.index, 0, movedQuestion);
+
+    // API request to update questions order
+    setQuestions(newQuestions);
+  };
+
+  return (
+    <Container>
+      <Form
+        handleOptionTextChange={handleOptionTextChange}
+        isAddOptionDisabled={isAddOptionDisabled}
+        isAddQuestionDisabled={isAddQuestionDisabled}
+        addQuestion={addQuestion}
+        handleQuestionTextChange={handleQuestionTextChange}
+        addOption={addOption}
+        newOptionName={newOptionName}
+        newQuestionName={newQuestionName}
+        newQuestionOptions={newQuestionOptions}
+        removeAnswerOption={removeAnswerOption}
+      />
+
+      <Questions
+        questions={questions}
+        onDragEnd={onDragEnd}
+        handleQuestionDelete={handleQuestionDelete}
+      />
+    </Container>
+  );
 }
 
 export default App;

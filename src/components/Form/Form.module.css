@@ -1,0 +1,60 @@
+.form {
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+    border-radius: 20px;
+}
+
+.question {
+    padding: 20px;
+    width: 50%;
+}
+
+.answers {
+    padding: 20px;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+}
+
+.newAnswersWrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 20px 0;
+}
+
+.questionAnswersWrapper {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.answer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px 10px;
+    background-color: #29296e;
+    color: #fff;
+    border-radius: 10px;
+    column-gap: 10px;
+    width: fit-content;
+    flex-direction: row;
+}
+
+.deleteBtn {
+    :hover {
+        opacity: 0.5;
+        cursor: pointer;
+    }
+}
+
+.addQuestionButtonWrapper {
+    margin-top: 50px;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
